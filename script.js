@@ -17,7 +17,7 @@ const database = firebase.database();
 class GameState {
     constructor() {
         this.score = 0;
-        this.lives = 3;
+        this.lives = 5;
         this.currentQuestion = 0;
         this.totalQuestions = 10;
         this.timeRemaining = 10;
@@ -30,7 +30,7 @@ class GameState {
 
     reset() {
         this.score = 0;
-        this.lives = 3;
+        this.lives = 5;
         this.currentQuestion = 0;
         this.timeRemaining = 10;
         this.gameActive = false;
