@@ -1,12 +1,12 @@
 // Firebase configuration - Replace with your Firebase config
 const firebaseConfig = {
-    apiKey: "your-api-key-here",
-    authDomain: "your-project.firebaseapp.com",
-    databaseURL: "https://your-project-default-rtdb.firebaseio.com/",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyCT2FuEHX1FBasVsYPuMtqJUjrVGQVw05M",
+    authDomain: "ai-day-ecd5e.firebaseapp.com",
+    databaseURL: "https://ai-day-ecd5e-default-rtdb.firebaseio.com",
+    projectId: "ai-day-ecd5e",
+    storageBucket: "ai-day-ecd5e.firebasestorage.app",
+    messagingSenderId: "26705685009",
+    appId: "1:26705685009:web:3932d41260805a2c939fb0"
 };
 
 // Initialize Firebase
