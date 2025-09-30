@@ -72,11 +72,11 @@ class GameState {
     }
 
     calculateScore(timeLeft) {
-        // Base score is 100, reduced by time taken
+        // Base score is 1000, reduced by time taken
         const timeUsed = 15 - timeLeft;
-        const baseScore = 100;
-        const timePenalty = Math.floor(timeUsed * 5); // 5 points per second
-        return Math.max(baseScore - timePenalty, 10); // Minimum 10 points
+        const baseScore = 1000;
+        const timePenalty = Math.floor(timeUsed * 50); // 50 points per second
+        return Math.max(baseScore - timePenalty, 100); // Minimum 100 points
     }
 }
 
@@ -216,10 +216,17 @@ class DeepfakeGame {
         
         timerElement.textContent = this.gameState.timeRemaining;
         timerCircle.classList.remove('warning');
+        
+        // Set initial progress to 100%
+        timerCircle.style.setProperty('--progress', '100');
 
         this.gameState.timer = setInterval(() => {
             this.gameState.timeRemaining--;
             timerElement.textContent = this.gameState.timeRemaining;
+            
+            // Update visual progress (percentage remaining)
+            const progress = (this.gameState.timeRemaining / 15) * 100;
+            timerCircle.style.setProperty('--progress', progress.toString());
             
             // Add warning animation when time is low
             if (this.gameState.timeRemaining <= 5) {
@@ -252,29 +259,31 @@ class DeepfakeGame {
         // Calculate score based on time remaining
         const points = isCorrect ? this.gameState.calculateScore(this.gameState.timeRemaining) : 0;
         
-        // Show visual feedback
-        this.showSelectionFeedback(imageId, isCorrect);
+        // Show overlay feedback
+        this.showImageOverlay(imageId, isCorrect, points);
         
         if (isCorrect) {
             this.gameState.score += points;
-            this.showFeedback(`Correct! +${points} points`, 'success');
         } else {
             this.gameState.lives--;
-            this.showFeedback('Wrong! That was the real image.', 'error');
             
             if (this.gameState.lives <= 0) {
                 setTimeout(() => {
                     this.endGame();
-                }, 2000);
+                }, 2500);
                 return;
             }
         }
+
+        // Update displays
+        this.updateScore();
+        this.updateLives();
 
         // Move to next question after delay
         setTimeout(() => {
             this.gameState.currentQuestion++;
             this.loadNextQuestion();
-        }, 2000);
+        }, 2500);
     }
 
     showSelectionFeedback(selectedImageId, isCorrect) {
@@ -293,30 +302,78 @@ class DeepfakeGame {
         }
     }
 
+    showImageOverlay(imageId, isCorrect, points = 0) {
+        const overlayId = imageId === 'image-1' ? 'overlay-1' : 'overlay-2';
+        const overlay = document.getElementById(overlayId);
+        const overlayIcon = overlay.querySelector('.overlay-icon');
+        const overlayText = overlay.querySelector('.overlay-text');
+        
+        // Set overlay content based on result
+        if (isCorrect) {
+            overlay.className = 'image-overlay correct show';
+            overlayIcon.textContent = '✓';
+            overlayText.textContent = `CORRECT! +${points}`;
+        } else {
+            overlay.className = 'image-overlay incorrect show';
+            overlayIcon.textContent = '✗';
+            overlayText.textContent = 'WRONG!';
+        }
+        
+        // Also show the correct answer on the other image
+        const otherImageId = imageId === 'image-1' ? 'image-2' : 'image-1';
+        const otherOverlayId = otherImageId === 'image-1' ? 'overlay-1' : 'overlay-2';
+        const otherElement = document.getElementById(otherImageId);
+        const otherOverlay = document.getElementById(otherOverlayId);
+        const otherType = otherElement.getAttribute('data-type');
+        
+        if (otherType === 'ai' && !isCorrect) {
+            // Show the AI image as the correct answer
+            const otherIcon = otherOverlay.querySelector('.overlay-icon');
+            const otherText = otherOverlay.querySelector('.overlay-text');
+            
+            otherOverlay.className = 'image-overlay correct show';
+            otherIcon.textContent = '✓';
+            otherText.textContent = 'AI IMAGE';
+        }
+        
+        // Hide overlays after delay
+        setTimeout(() => {
+            overlay.classList.remove('show');
+            otherOverlay.classList.remove('show');
+        }, 2000);
+    }
+
     timeUp() {
         this.stopTimer();
         this.gameState.lives--;
         
-        // Highlight the correct answer
-        document.querySelectorAll('.image-option').forEach(option => {
-            if (option.getAttribute('data-type') === 'ai') {
-                option.classList.add('correct');
-            }
-        });
+        // Show timeout feedback on both images
+        const overlay1 = document.getElementById('overlay-1');
+        const overlay2 = document.getElementById('overlay-2');
         
-        this.showFeedback('Time\'s up! You lost a life.', 'error');
+        overlay1.className = 'image-overlay incorrect show';
+        overlay1.querySelector('.overlay-icon').textContent = '⏰';
+        overlay1.querySelector('.overlay-text').textContent = 'TIME UP!';
+        
+        overlay2.className = 'image-overlay incorrect show';
+        overlay2.querySelector('.overlay-icon').textContent = '⏰';
+        overlay2.querySelector('.overlay-text').textContent = 'TIME UP!';
+        
+        this.updateLives();
         
         if (this.gameState.lives <= 0) {
             setTimeout(() => {
                 this.endGame();
-            }, 2000);
+            }, 2500);
             return;
         }
 
         setTimeout(() => {
+            overlay1.classList.remove('show');
+            overlay2.classList.remove('show');
             this.gameState.currentQuestion++;
             this.loadNextQuestion();
-        }, 2000);
+        }, 2500);
     }
 
     showFeedback(message, type) {
