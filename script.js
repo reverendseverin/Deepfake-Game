@@ -40,23 +40,13 @@ class GameState {
     }
 
     generateImagePairs() {
-        // Generate array of 30 image pairs (using PNG images from real dataset)
+        // Generate array of 20 unique image pairs (using PNG images from real dataset)
         this.imagePairs = [];
         for (let i = 1; i <= 20; i++) {
             this.imagePairs.push({
                 id: i,
                 real: `images/${i}_real.png`,
                 ai: `images/${i}_ai.png`
-            });
-        }
-        
-        // Add more pairs by cycling through first 10 for variety
-        for (let i = 21; i <= 30; i++) {
-            const cycleIndex = ((i - 21) % 10) + 1;
-            this.imagePairs.push({
-                id: i,
-                real: `images/${cycleIndex}_real.png`,
-                ai: `images/${cycleIndex}_ai.png`
             });
         }
         
