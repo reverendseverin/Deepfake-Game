@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detective - Can You Spot the AI?</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="logo-container">
+                <h1 class="game-title">DEEPFAKE<br><span class="detective">DETECTIVE</span></h1>
+                <p class="subtitle">Can you spot the AI-generated image?</p>
+            </div>
+            
+            <div class="game-rules">
+                <div class="rule-item">
+                    <span class="rule-icon">🎯</span>
+                    <span>Find the AI image in each pair</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-icon">⏱️</span>
+                    <span>15 seconds per question</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-icon">❤️</span>
+                    <span>3 lives to survive</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-icon">⚡</span>
+                    <span>Faster answers = more points</span>
+                </div>
+            </div>
+            
+            <button id="start-game" class="cta-button">START GAME</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="score-container">
+                    <span class="label">Score</span>
+                    <span id="score" class="value">0</span>
+                </div>
+                
+                <div class="timer-container">
+                    <div id="timer-circle" class="timer-circle">
+                        <span id="timer" class="timer-value">15</span>
+                    </div>
+                </div>
+                
+                <div class="lives-container">
+                    <span class="label">Lives</span>
+                    <div id="lives" class="lives-display">
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                        <span class="heart">❤️</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress" class="progress-fill"></div>
+                </div>
+                <span id="question-number" class="question-counter">1 / 10</span>
+            </div>
+
+            <div class="game-question">
+                <h2 class="question-title">Which image is AI-generated?</h2>
+                
+                <div class="images-container">
+                    <div class="image-option" id="image-1" data-type="">
+                        <img id="img-1" src="" alt="Option 1">
+
+                    </div>
+                    
+                    <div class="image-option" id="image-2" data-type="">
+                        <img id="img-2" src="" alt="Option 2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="screen">
+            <div class="game-over-content">
+                <h2 id="game-over-title" class="game-over-title">Game Over!</h2>
+                <div class="final-score-container">
+                    <span class="final-score-label">Final Score</span>
+                    <span id="final-score" class="final-score-value">0</span>
+                </div>
+                
+                <div class="name-input-container">
+                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+                    <button id="submit-score" class="submit-button">SUBMIT SCORE</button>
+                </div>
+                
+                <button id="play-again" class="cta-button secondary">PLAY AGAIN</button>
+            </div>
+        </div>
+
+        <!-- Scoreboard Screen -->
+        <div id="scoreboard-screen" class="screen">
+            <div class="scoreboard-content">
+                <h2 class="scoreboard-title">🏆 LEADERBOARD</h2>
+                <div id="scoreboard-list" class="scoreboard-list">
+                    <!-- Scores will be populated here -->
+                </div>
+                <button id="back-to-start" class="cta-button">NEW GAME</button>
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" class="modal">
+            <div class="modal-content">
+                <div id="feedback-content" class="feedback-content">
+                    <!-- Feedback will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
