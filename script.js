@@ -188,6 +188,9 @@ class DeepfakeGame {
         option1.setAttribute('data-type', positions[0]);
         option2.setAttribute('data-type', positions[1]);
 
+        // Reactivate game for new question
+        this.gameState.gameActive = true;
+
         // Update UI
         this.updateGameUI();
         this.startTimer();
@@ -253,9 +256,12 @@ class DeepfakeGame {
     }
 
     selectImage(imageId) {
-        if (!this.gameState.gameActive || this.gameState.timer === null) return;
+        if (!this.gameState.gameActive) return;
 
         this.stopTimer();
+        
+        // Prevent multiple clicks during feedback display
+        this.gameState.gameActive = false;
         
         const selectedElement = document.getElementById(imageId);
         const selectedType = selectedElement.getAttribute('data-type');
@@ -338,6 +344,7 @@ class DeepfakeGame {
 
     timeUp() {
         this.stopTimer();
+        this.gameState.gameActive = false;
         this.gameState.lives--;
         
         // Show timeout feedback on both images
