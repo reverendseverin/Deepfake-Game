@@ -295,8 +295,8 @@ body {
 
 .image-option {
     position: relative;
-    width: 350px;
-    height: 350px;
+    width: 450px;
+    height: 450px;
     border-radius: 20px;
     overflow: hidden;
     cursor: pointer;
@@ -305,21 +305,10 @@ body {
     border: 4px solid rgba(255, 255, 255, 0.2);
 }
 
-.image-option:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
 .image-option img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.image-option:hover img {
-    transform: scale(1.05);
 }
 
 .image-overlay {

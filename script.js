@@ -64,7 +64,7 @@ class GameState {
 
     calculateScore(remainingMs) {
         // Score based on remaining milliseconds
-        // 10000ms = 100 points, 8301ms = 83 points, 6428ms = 64 points, etc.
+        // 15000ms = 150 points, 12000ms = 120 points, 8500ms = 85 points, etc.
         return Math.floor(remainingMs / 100);
     }
 }
@@ -206,7 +206,7 @@ class DeepfakeGame {
     }
 
     startTimer() {
-        this.gameState.timeRemaining = 10;
+        this.gameState.timeRemaining = 15;
         this.gameState.startTime = Date.now();
         const timerElement = document.getElementById('timer');
         const timerCircle = document.getElementById('timer-circle');
@@ -222,7 +222,7 @@ class DeepfakeGame {
             timerElement.textContent = this.gameState.timeRemaining;
             
             // Update visual progress (percentage remaining)
-            const progress = (this.gameState.timeRemaining / 10) * 100;
+            const progress = (this.gameState.timeRemaining / 15) * 100;
             timerCircle.style.setProperty('--progress', progress.toString());
             
             // Add warning animation when time is low
@@ -259,7 +259,7 @@ class DeepfakeGame {
         // Calculate remaining milliseconds when clicked
         const currentTime = Date.now();
         const elapsedMs = currentTime - this.gameState.startTime;
-        const totalTimeMs = 10000; // 10 seconds in milliseconds
+        const totalTimeMs = 15000; // 15 seconds in milliseconds
         const remainingMs = Math.max(totalTimeMs - elapsedMs, 0);
         
         // Calculate score based on remaining milliseconds
@@ -345,29 +345,46 @@ class DeepfakeGame {
         const overlay1 = document.getElementById('overlay-1');
         const overlay2 = document.getElementById('overlay-2');
         
-        overlay1.className = 'image-overlay incorrect show';
-        overlay1.querySelector('.overlay-icon').textContent = '⏰';
-        overlay1.querySelector('.overlay-text').textContent = 'TIME UP!';
+        // Determine which image was real and which was AI
+        const realImageId = this.currentPair.realPosition === 'left' ? 'image-1' : 'image-2';
+        const aiImageId = this.currentPair.realPosition === 'left' ? 'image-2' : 'image-1';
         
-        overlay2.className = 'image-overlay incorrect show';
-        overlay2.querySelector('.overlay-icon').textContent = '⏰';
-        overlay2.querySelector('.overlay-text').textContent = 'TIME UP!';
+        // Show real image as correct (green)
+        if (realImageId === 'image-1') {
+            overlay1.className = 'image-overlay correct show';
+            overlay1.querySelector('.overlay-icon').textContent = '✓';
+            overlay1.querySelector('.overlay-text').textContent = 'REAL';
+            
+            overlay2.className = 'image-overlay incorrect show';
+            overlay2.querySelector('.overlay-icon').textContent = '✗';
+            overlay2.querySelector('.overlay-text').textContent = 'AI';
+        } else {
+            overlay1.className = 'image-overlay incorrect show';
+            overlay1.querySelector('.overlay-icon').textContent = '✗';
+            overlay1.querySelector('.overlay-text').textContent = 'AI';
+            
+            overlay2.className = 'image-overlay correct show';
+            overlay2.querySelector('.overlay-icon').textContent = '✓';
+            overlay2.querySelector('.overlay-text').textContent = 'REAL';
+        }
+        
+        // Show "Time's Up!" message at the top
+        this.showFeedback("⏰ Time's Up!", 'warning');
         
         this.updateGameUI();
         
-        if (this.gameState.lives <= 0) {
-            setTimeout(() => {
-                this.endGame();
-            }, 2500);
-            return;
-        }
-
+        // Auto-proceed after 3 seconds
         setTimeout(() => {
             overlay1.classList.remove('show');
             overlay2.classList.remove('show');
-            this.gameState.currentQuestion++;
-            this.loadNextQuestion();
-        }, 2500);
+            
+            if (this.gameState.lives <= 0) {
+                this.endGame();
+            } else {
+                this.gameState.currentQuestion++;
+                this.loadNextQuestion();
+            }
+        }, 3000);
     }
 
     showFeedback(message, type) {
@@ -511,6 +528,8 @@ class DeepfakeGame {
         document.getElementById('player-name').value = '';
         this.showScreen('start-screen');
     }
+
+    // Modal Methods - keeping only what's needed
 }
 
 // Image preloader
