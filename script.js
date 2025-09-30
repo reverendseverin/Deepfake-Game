@@ -160,9 +160,14 @@ class DeepfakeGame {
             return;
         }
 
-        // Clear previous feedback styles
+        // Clear previous feedback styles and overlays
         document.querySelectorAll('.image-option').forEach(img => {
             img.classList.remove('correct', 'incorrect');
+        });
+        
+        // Clear any existing overlays
+        document.querySelectorAll('.image-overlay').forEach(overlay => {
+            overlay.classList.remove('show', 'correct', 'incorrect');
         });
 
         this.currentPair = this.gameState.selectedPairs[this.gameState.currentQuestion];
@@ -286,22 +291,6 @@ class DeepfakeGame {
         }, 2500);
     }
 
-    showSelectionFeedback(selectedImageId, isCorrect) {
-        const selectedElement = document.getElementById(selectedImageId);
-        const otherImageId = selectedImageId === 'image-1' ? 'image-2' : 'image-1';
-        const otherElement = document.getElementById(otherImageId);
-        
-        if (isCorrect) {
-            selectedElement.classList.add('correct');
-        } else {
-            selectedElement.classList.add('incorrect');
-            // Highlight the correct answer
-            if (otherElement.getAttribute('data-type') === 'ai') {
-                otherElement.classList.add('correct');
-            }
-        }
-    }
-
     showImageOverlay(imageId, isCorrect, points = 0) {
         const overlayId = imageId === 'image-1' ? 'overlay-1' : 'overlay-2';
         const overlay = document.getElementById(overlayId);
@@ -317,29 +306,33 @@ class DeepfakeGame {
             overlay.className = 'image-overlay incorrect show';
             overlayIcon.textContent = '✗';
             overlayText.textContent = 'WRONG!';
-        }
-        
-        // Also show the correct answer on the other image
-        const otherImageId = imageId === 'image-1' ? 'image-2' : 'image-1';
-        const otherOverlayId = otherImageId === 'image-1' ? 'overlay-1' : 'overlay-2';
-        const otherElement = document.getElementById(otherImageId);
-        const otherOverlay = document.getElementById(otherOverlayId);
-        const otherType = otherElement.getAttribute('data-type');
-        
-        if (otherType === 'ai' && !isCorrect) {
-            // Show the AI image as the correct answer
-            const otherIcon = otherOverlay.querySelector('.overlay-icon');
-            const otherText = otherOverlay.querySelector('.overlay-text');
             
-            otherOverlay.className = 'image-overlay correct show';
-            otherIcon.textContent = '✓';
-            otherText.textContent = 'AI IMAGE';
+            // Also show the correct answer on the other image (only if it's the AI image)
+            const otherImageId = imageId === 'image-1' ? 'image-2' : 'image-1';
+            const otherOverlayId = otherImageId === 'image-1' ? 'overlay-1' : 'overlay-2';
+            const otherElement = document.getElementById(otherImageId);
+            const otherOverlay = document.getElementById(otherOverlayId);
+            const otherType = otherElement.getAttribute('data-type');
+            
+            if (otherType === 'ai') {
+                // Show the AI image as the correct answer
+                const otherIcon = otherOverlay.querySelector('.overlay-icon');
+                const otherText = otherOverlay.querySelector('.overlay-text');
+                
+                otherOverlay.className = 'image-overlay correct show';
+                otherIcon.textContent = '✓';
+                otherText.textContent = 'AI IMAGE';
+            }
         }
         
         // Hide overlays after delay
         setTimeout(() => {
             overlay.classList.remove('show');
-            otherOverlay.classList.remove('show');
+            if (!isCorrect) {
+                const otherOverlayId = imageId === 'image-1' ? 'overlay-2' : 'overlay-1';
+                const otherOverlay = document.getElementById(otherOverlayId);
+                otherOverlay.classList.remove('show');
+            }
         }, 2000);
     }
 

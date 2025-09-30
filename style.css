@@ -336,10 +336,6 @@ body {
     transition: opacity 0.3s ease;
 }
 
-.image-option:hover .image-overlay {
-    opacity: 1;
-}
-
 .tap-indicator {
     background: rgba(255, 255, 255, 0.9);
     color: #333;
