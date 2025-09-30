@@ -40,13 +40,17 @@ class GameState {
     }
 
     generateImagePairs() {
-        // Generate array of 20 unique image pairs (using PNG images from real dataset)
+        // Generate array of 30 unique image pairs (supporting both PNG and AVIF)
         this.imagePairs = [];
-        for (let i = 1; i <= 20; i++) {
+        for (let i = 1; i <= 30; i++) {
+            // Determine file extensions based on image number
+            const realExt = i <= 20 ? 'png' : 'avif';
+            const aiExt = 'png'; // All AI images are PNG
+            
             this.imagePairs.push({
                 id: i,
-                real: `images/${i}_real.png`,
-                ai: `images/${i}_ai.png`
+                real: `images/${i}_real.${realExt}`,
+                ai: `images/${i}_ai.${aiExt}`
             });
         }
         
@@ -560,10 +564,14 @@ class ImagePreloader {
     async preloadGameImages() {
         const imagePromises = [];
         
-        // Preload first 20 image pairs (using PNG from real dataset)
-        for (let i = 1; i <= 20; i++) {
-            imagePromises.push(this.preloadImage(`images/${i}_real.png`));
-            imagePromises.push(this.preloadImage(`images/${i}_ai.png`));
+        // Preload all 30 image pairs (supporting both PNG and AVIF)
+        for (let i = 1; i <= 30; i++) {
+            // Determine file extensions based on image number
+            const realExt = i <= 20 ? 'png' : 'avif';
+            const aiExt = 'png'; // All AI images are PNG
+            
+            imagePromises.push(this.preloadImage(`images/${i}_real.${realExt}`));
+            imagePromises.push(this.preloadImage(`images/${i}_ai.${aiExt}`));
         }
 
         try {
