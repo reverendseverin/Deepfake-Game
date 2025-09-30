@@ -20,7 +20,7 @@ class GameState {
         this.lives = 3;
         this.currentQuestion = 0;
         this.totalQuestions = 10;
-        this.timeRemaining = 15;
+        this.timeRemaining = 10;
         this.gameActive = false;
         this.timer = null;
         this.imagePairs = [];
@@ -32,7 +32,7 @@ class GameState {
         this.score = 0;
         this.lives = 3;
         this.currentQuestion = 0;
-        this.timeRemaining = 15;
+        this.timeRemaining = 10;
         this.gameActive = false;
         this.timer = null;
         this.selectedPairs = [];
@@ -71,12 +71,10 @@ class GameState {
         }
     }
 
-    calculateScore(timeLeft) {
-        // Base score is 1000, reduced by time taken
-        const timeUsed = 15 - timeLeft;
-        const baseScore = 1000;
-        const timePenalty = Math.floor(timeUsed * 50); // 50 points per second
-        return Math.max(baseScore - timePenalty, 100); // Minimum 100 points
+    calculateScore(remainingMs) {
+        // Score based on remaining milliseconds
+        // 10000ms = 100 points, 8301ms = 83 points, 6428ms = 64 points, etc.
+        return Math.floor(remainingMs / 100);
     }
 }
 
@@ -217,7 +215,7 @@ class DeepfakeGame {
     }
 
     startTimer() {
-        this.gameState.timeRemaining = 15;
+        this.gameState.timeRemaining = 10;
         this.gameState.startTime = Date.now();
         const timerElement = document.getElementById('timer');
         const timerCircle = document.getElementById('timer-circle');
@@ -233,7 +231,7 @@ class DeepfakeGame {
             timerElement.textContent = this.gameState.timeRemaining;
             
             // Update visual progress (percentage remaining)
-            const progress = (this.gameState.timeRemaining / 15) * 100;
+            const progress = (this.gameState.timeRemaining / 10) * 100;
             timerCircle.style.setProperty('--progress', progress.toString());
             
             // Add warning animation when time is low
@@ -267,8 +265,14 @@ class DeepfakeGame {
         const selectedType = selectedElement.getAttribute('data-type');
         const isCorrect = selectedType === 'ai';
         
-        // Calculate score based on time remaining
-        const points = isCorrect ? this.gameState.calculateScore(this.gameState.timeRemaining) : 0;
+        // Calculate remaining milliseconds when clicked
+        const currentTime = Date.now();
+        const elapsedMs = currentTime - this.gameState.startTime;
+        const totalTimeMs = 10000; // 10 seconds in milliseconds
+        const remainingMs = Math.max(totalTimeMs - elapsedMs, 0);
+        
+        // Calculate score based on remaining milliseconds
+        const points = isCorrect ? this.gameState.calculateScore(remainingMs) : 0;
         
         // Show overlay feedback
         this.showImageOverlay(imageId, isCorrect, points);
@@ -287,8 +291,7 @@ class DeepfakeGame {
         }
 
         // Update displays
-        this.updateScore();
-        this.updateLives();
+        this.updateGameUI();
 
         // Move to next question after delay
         setTimeout(() => {
@@ -359,7 +362,7 @@ class DeepfakeGame {
         overlay2.querySelector('.overlay-icon').textContent = '⏰';
         overlay2.querySelector('.overlay-text').textContent = 'TIME UP!';
         
-        this.updateLives();
+        this.updateGameUI();
         
         if (this.gameState.lives <= 0) {
             setTimeout(() => {

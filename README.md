@@ -11,7 +11,7 @@ The game is deployed and accessible at: **https://reverendseverin.github.io/Deep
 ## 🎮 Game Features
 
 - **10 Challenging Questions**: Players face 10 rounds of real vs AI image pairs
-- **Time Pressure**: 15-second timer per question with score bonuses for speed
+- **Time Pressure**: 10-second timer per question with score bonuses for speed
 - **Lives System**: 3 lives - lose one for each wrong answer or timeout
 - **Dynamic Scoring**: Points based on response time (faster = more points)
 - **Real-time Leaderboard**: Firebase integration for live scoreboards
@@ -21,10 +21,11 @@ The game is deployed and accessible at: **https://reverendseverin.github.io/Deep
 ## 🎯 Game Mechanics
 
 ### Scoring System
-- **Base Score**: 100 points per correct answer
-- **Time Bonus**: Faster answers get higher scores
-- **Penalty**: 5 points deducted per second taken
-- **Minimum**: 10 points minimum per correct answer
+- **Millisecond Precision**: Score = remaining milliseconds ÷ 100
+- **Example**: 8.301 seconds remaining = 8301ms ÷ 100 = 83 points
+- **Example**: 6.428 seconds remaining = 6428ms ÷ 100 = 64 points  
+- **Fast Response**: Under 1 second = 90+ points (9000+ms remaining)
+- **Maximum Score**: 100 points (instant response)
 - **Wrong Answer**: 0 points and lose a life
 
 ### Lives System
@@ -167,7 +168,7 @@ Edit `style.css` to customize:
 
 ### Game Logic
 Modify `script.js` to adjust:
-- Timer duration (currently 15 seconds)
+- Timer duration (currently 10 seconds)
 - Number of lives (currently 3)
 - Scoring formula
 - Number of questions (currently 10)
