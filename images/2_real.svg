@@ -1,7 +1,0 @@
-﻿<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
-  <rect width="400" height="400" fill="#e8f4fd"/>
-  <text x="200" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2c3e50">REAL IMAGE</text>
-  <text x="200" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#34495e">Pair 2</text>
-  <circle cx="200" cy="280" r="40" fill="#27ae60" opacity="0.8"/>
-  <text x="200" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="white">REAL</text>
-</svg>
