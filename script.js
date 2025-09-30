@@ -40,22 +40,23 @@ class GameState {
     }
 
     generateImagePairs() {
-        // Generate array of 30 image pairs (using SVG for demo, replace with actual images)
+        // Generate array of 30 image pairs (using PNG images from real dataset)
         this.imagePairs = [];
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 20; i++) {
             this.imagePairs.push({
                 id: i,
-                real: `images/${i}_real.svg`,
-                ai: `images/${i}_ai.svg`
+                real: `images/${i}_real.png`,
+                ai: `images/${i}_ai.png`
             });
         }
         
-        // Add more placeholder pairs for demo (in production, use actual images)
-        for (let i = 6; i <= 30; i++) {
+        // Add more pairs by cycling through first 10 for variety
+        for (let i = 21; i <= 30; i++) {
+            const cycleIndex = ((i - 21) % 10) + 1;
             this.imagePairs.push({
                 id: i,
-                real: `images/${(i % 5) + 1}_real.svg`,
-                ai: `images/${(i % 5) + 1}_ai.svg`
+                real: `images/${cycleIndex}_real.png`,
+                ai: `images/${cycleIndex}_ai.png`
             });
         }
         
@@ -550,10 +551,10 @@ class ImagePreloader {
     async preloadGameImages() {
         const imagePromises = [];
         
-        // Preload first few image pairs (using SVG for demo)
-        for (let i = 1; i <= 5; i++) {
-            imagePromises.push(this.preloadImage(`images/${i}_real.svg`));
-            imagePromises.push(this.preloadImage(`images/${i}_ai.svg`));
+        // Preload first 20 image pairs (using PNG from real dataset)
+        for (let i = 1; i <= 20; i++) {
+            imagePromises.push(this.preloadImage(`images/${i}_real.png`));
+            imagePromises.push(this.preloadImage(`images/${i}_ai.png`));
         }
 
         try {
