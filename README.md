@@ -1,14 +1,12 @@
 # Deepfake Detective - AI Image Detection Game
 
-🎮 **[Play Live Demo](https://yourusername.github.io/deepfake_game)** 🎮
+🎮 **[Play Live Demo](https://reverendseverin.github.io/Deepfake-Game)** 🎮
 
 An interactive touch-friendly game designed for iPad kiosks where players compete to identify AI-generated images from real ones.
 
 ## 🌐 Live Demo
 
-The game is deployed and accessible at: **https://yourusername.github.io/deepfake_game**
-
-> **Note**: Replace `yourusername` with your actual GitHub username after deployment.
+The game is deployed and accessible at: **https://reverendseverin.github.io/Deepfake-Game**
 
 ## 🎮 Game Features
 
@@ -87,7 +85,7 @@ This project is set up for automatic deployment to GitHub Pages using GitHub Act
 2. **Push to GitHub**
    ```bash
    # Add your GitHub repository as origin
-   git remote add origin https://github.com/yourusername/deepfake_game.git
+   git remote add origin https://github.com/reverendseverin/Deepfake-Game.git
    git branch -M main
    git push -u origin main
    ```
@@ -99,7 +97,7 @@ This project is set up for automatic deployment to GitHub Pages using GitHub Act
    - The deployment workflow will automatically run
 
 4. **Access Your Game**
-   - Your game will be available at: `https://yourusername.github.io/deepfake_game`
+   - Your game will be available at: `https://reverendseverin.github.io/Deepfake-Game`
    - Updates to the main branch will automatically redeploy
 
 ### Alternative Deployment Methods
