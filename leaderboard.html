@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Deepfake Detective</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="leaderboard.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="leaderboard-app">
+        <!-- Header -->
+        <header class="leaderboard-header">
+            <div class="header-content">
+                <h1 class="leaderboard-title">🏆 LEADERBOARD</h1>
+                <p class="leaderboard-subtitle">Top Deepfake Detectives</p>
+            </div>
+        </header>
+
+        <!-- Leaderboard Section -->
+        <section class="leaderboard-section">
+            <div class="leaderboard-header-section">
+                <div class="header-info">
+                    <div class="score-count">
+                        <span id="total-scores">0</span> players
+                    </div>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>LIVE</span>
+                    </div>
+                </div>
+            </div>
+            <div id="leaderboard-list" class="leaderboard-list">
+                <!-- All scores will be populated here with top 5 sticky -->
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading scores...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden">
+            <div class="error-icon">⚠️</div>
+            <h3>Unable to load scores</h3>
+            <p>Please check your connection.</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state hidden">
+            <div class="empty-icon">🎯</div>
+            <h3>No scores yet!</h3>
+            <p>Waiting for players to join...</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script src="leaderboard.js"></script>
+</body>
+
+</html>
