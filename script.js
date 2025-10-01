@@ -644,3 +644,50 @@ document.addEventListener(
   },
   false
 );
+
+// Mobile optimizations
+document.addEventListener("DOMContentLoaded", () => {
+  // Add mobile-specific optimizations
+  if ("ontouchstart" in window) {
+    // Add touch-friendly classes
+    document.body.classList.add("touch-device");
+
+    // Optimize touch events
+    document.addEventListener("touchstart", () => {}, { passive: true });
+    document.addEventListener(
+      "touchmove",
+      (e) => {
+        // Prevent scrolling during game
+        if (
+          document.getElementById("game-screen").classList.contains("active")
+        ) {
+          e.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+  }
+
+  // Prevent pull-to-refresh on mobile
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  // Optimize for mobile viewport
+  const setViewportHeight = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+  };
+
+  setViewportHeight();
+  window.addEventListener("resize", setViewportHeight);
+  window.addEventListener("orientationchange", () => {
+    setTimeout(setViewportHeight, 100);
+  });
+});
