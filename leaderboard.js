@@ -18,11 +18,9 @@ class Leaderboard {
   constructor() {
     this.scores = [];
     this.isLoading = true;
-    this.refreshInterval = null;
     this.initializeElements();
     this.initializeEventListeners();
     this.loadScores();
-    this.startAutoRefresh();
   }
 
   initializeElements() {
@@ -261,25 +259,9 @@ class Leaderboard {
     this.emptyState.classList.remove("hidden");
   }
 
-  startAutoRefresh() {
-    // Refresh every 30 seconds
-    this.refreshInterval = setInterval(() => {
-      if (!this.isLoading) {
-        this.loadScores();
-      }
-    }, 30000);
-  }
-
-  stopAutoRefresh() {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
-  }
-
   // Clean up when page is unloaded
   destroy() {
-    this.stopAutoRefresh();
+    // No cleanup needed for static display
   }
 }
 
@@ -294,22 +276,218 @@ class RealTimeLeaderboard extends Leaderboard {
     // Listen for new scores in real-time
     database.ref("scores").on("child_added", (snapshot) => {
       if (!this.isLoading) {
-        this.loadScores(); // Reload all scores when new one is added
+        const newScore = {
+          id: snapshot.key,
+          name: snapshot.val().name || "Anonymous",
+          score: snapshot.val().score || 0,
+          timestamp: snapshot.val().timestamp || Date.now(),
+        };
+        this.addNewScore(newScore);
       }
     });
 
     // Listen for score updates
     database.ref("scores").on("child_changed", (snapshot) => {
       if (!this.isLoading) {
-        this.loadScores();
+        const updatedScore = {
+          id: snapshot.key,
+          name: snapshot.val().name || "Anonymous",
+          score: snapshot.val().score || 0,
+          timestamp: snapshot.val().timestamp || Date.now(),
+        };
+        this.updateExistingScore(updatedScore);
       }
     });
 
     // Listen for score deletions
     database.ref("scores").on("child_removed", (snapshot) => {
       if (!this.isLoading) {
-        this.loadScores();
+        this.removeScore(snapshot.key);
       }
+    });
+  }
+
+  addNewScore(newScore) {
+    // Add the new score to our array
+    this.scores.push(newScore);
+
+    // Sort the scores
+    this.scores.sort((a, b) => b.score - a.score);
+
+    // Update total count
+    this.totalScoresElement.textContent = this.scores.length;
+
+    // Find the new position of the score
+    const newRank =
+      this.scores.findIndex((score) => score.id === newScore.id) + 1;
+
+    // Add the new score with slide-in animation
+    this.addScoreWithAnimation(newScore, newRank);
+  }
+
+  updateExistingScore(updatedScore) {
+    // Find and update the existing score
+    const oldIndex = this.scores.findIndex(
+      (score) => score.id === updatedScore.id
+    );
+    if (oldIndex !== -1) {
+      this.scores[oldIndex] = updatedScore;
+
+      // Sort the scores
+      this.scores.sort((a, b) => b.score - a.score);
+
+      // Find new position
+      const newRank =
+        this.scores.findIndex((score) => score.id === updatedScore.id) + 1;
+
+      // Update the existing entry
+      this.updateScoreWithAnimation(
+        updatedScore,
+        newRank,
+        oldIndex !== newRank - 1
+      );
+    }
+  }
+
+  removeScore(scoreId) {
+    // Remove the score from our array
+    this.scores = this.scores.filter((score) => score.id !== scoreId);
+
+    // Update total count
+    this.totalScoresElement.textContent = this.scores.length;
+
+    // Remove the score from the display
+    this.removeScoreWithAnimation(scoreId);
+  }
+
+  addScoreWithAnimation(score, rank) {
+    const newEntry = this.createAnimatedScoreEntry(score, rank);
+
+    // Insert at the correct position
+    const existingEntries = Array.from(this.leaderboardList.children);
+    const insertIndex = rank - 1;
+
+    if (insertIndex >= existingEntries.length) {
+      // Add to end
+      this.leaderboardList.appendChild(newEntry);
+    } else {
+      // Insert before existing entry
+      this.leaderboardList.insertBefore(newEntry, existingEntries[insertIndex]);
+    }
+
+    // Update ranks of all entries after the inserted one
+    this.updateRanksAfterInsert(insertIndex);
+  }
+
+  updateScoreWithAnimation(score, newRank, rankChanged) {
+    const existingEntry = this.leaderboardList.querySelector(
+      `[data-score-id="${score.id}"]`
+    );
+    if (!existingEntry) return;
+
+    const oldRank = parseInt(
+      existingEntry
+        .querySelector(".player-rank")
+        .textContent.replace(/[^\d]/g, "")
+    );
+
+    // Update the entry content
+    this.updateExistingEntry(existingEntry, score, newRank);
+
+    if (rankChanged) {
+      // Move the entry to the correct position
+      this.moveEntryToPosition(existingEntry, newRank - 1);
+      // Update ranks of affected entries
+      this.updateRanksAfterMove(oldRank - 1, newRank - 1);
+    }
+  }
+
+  removeScoreWithAnimation(scoreId) {
+    const entry = this.leaderboardList.querySelector(
+      `[data-score-id="${scoreId}"]`
+    );
+    if (!entry) return;
+
+    // Add slide-out animation
+    entry.style.animation = "slideOutLeft 0.5s ease-in forwards";
+
+    // Remove after animation
+    setTimeout(() => {
+      if (entry.parentNode) {
+        entry.parentNode.removeChild(entry);
+      }
+      // Update ranks of remaining entries
+      this.updateAllRanks();
+    }, 500);
+  }
+
+  moveEntryToPosition(entry, newIndex) {
+    const existingEntries = Array.from(this.leaderboardList.children);
+    const currentIndex = existingEntries.indexOf(entry);
+
+    if (currentIndex !== newIndex) {
+      if (newIndex >= existingEntries.length) {
+        this.leaderboardList.appendChild(entry);
+      } else {
+        this.leaderboardList.insertBefore(entry, existingEntries[newIndex]);
+      }
+    }
+  }
+
+  updateRanksAfterInsert(insertIndex) {
+    const entries = Array.from(this.leaderboardList.children);
+    entries.forEach((entry, index) => {
+      if (index > insertIndex) {
+        const rank = index + 1;
+        const rankElement = entry.querySelector(".player-rank");
+        const rankIcon = this.getRankIcon(rank);
+        if (rankElement) {
+          rankElement.textContent = `${rankIcon}${rank}`;
+        }
+
+        // Update classes
+        const rankClass = this.getRankClass(rank);
+        const stickyClass = rank <= 5 ? "sticky" : "";
+        entry.className = `score-entry ${rankClass} ${stickyClass}`;
+      }
+    });
+  }
+
+  updateRanksAfterMove(oldIndex, newIndex) {
+    const entries = Array.from(this.leaderboardList.children);
+    const startIndex = Math.min(oldIndex, newIndex);
+
+    entries.forEach((entry, index) => {
+      if (index >= startIndex) {
+        const rank = index + 1;
+        const rankElement = entry.querySelector(".player-rank");
+        const rankIcon = this.getRankIcon(rank);
+        if (rankElement) {
+          rankElement.textContent = `${rankIcon}${rank}`;
+        }
+
+        // Update classes
+        const rankClass = this.getRankClass(rank);
+        const stickyClass = rank <= 5 ? "sticky" : "";
+        entry.className = `score-entry ${rankClass} ${stickyClass}`;
+      }
+    });
+  }
+
+  updateAllRanks() {
+    const entries = Array.from(this.leaderboardList.children);
+    entries.forEach((entry, index) => {
+      const rank = index + 1;
+      const rankElement = entry.querySelector(".player-rank");
+      const rankIcon = this.getRankIcon(rank);
+      if (rankElement) {
+        rankElement.textContent = `${rankIcon}${rank}`;
+      }
+
+      // Update classes
+      const rankClass = this.getRankClass(rank);
+      const stickyClass = rank <= 5 ? "sticky" : "";
+      entry.className = `score-entry ${rankClass} ${stickyClass}`;
     });
   }
 
