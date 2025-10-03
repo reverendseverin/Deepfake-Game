@@ -8,13 +8,18 @@
 body {
   font-family: "Space Grotesk", sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 #app {
@@ -39,8 +44,10 @@ body {
   visibility: hidden;
   transition: all 0.5s ease-in-out;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  overflow-y: auto;
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .screen.active {
@@ -52,13 +59,15 @@ body {
 #start-screen {
   text-align: center;
   padding: 1rem;
-  justify-content: flex-start;
-  padding-top: 2rem;
+  justify-content: space-between;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .logo-container {
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   animation: fadeInUp 1s ease-out;
+  flex-shrink: 0;
 }
 
 .game-title {
@@ -81,7 +90,7 @@ body {
 }
 
 .subtitle {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 3vw, 1.5rem);
   color: rgba(255, 255, 255, 0.8);
   font-weight: 300;
 }
@@ -89,17 +98,18 @@ body {
 .game-rules {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
   max-width: 600px;
   animation: fadeInUp 1s ease-out 0.3s both;
+  flex-shrink: 0;
 }
 
 .rule-item {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -113,7 +123,7 @@ body {
 }
 
 .rule-icon {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: 0.5rem;
 }
 
@@ -121,7 +131,7 @@ body {
   color: white;
   font-weight: 400;
   text-align: center;
-  font-size: 1rem;
+  font-size: clamp(0.8rem, 2vw, 1rem);
 }
 
 /* Buttons */
@@ -129,8 +139,8 @@ body {
   background: linear-gradient(45deg, #ff6b6b, #feca57);
   border: none;
   border-radius: 50px;
-  padding: 1rem 3rem;
-  font-size: 1.5rem;
+  padding: clamp(0.8rem, 2vw, 1rem) clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1rem, 3vw, 1.5rem);
   font-weight: 700;
   color: white;
   cursor: pointer;
@@ -164,15 +174,16 @@ body {
   flex-direction: column;
   gap: 1rem;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .leaderboard-link {
   background: linear-gradient(45deg, #a55eea, #26de81);
   border: none;
   border-radius: 50px;
-  padding: 0.75rem 2rem;
-  font-size: 1.1rem;
+  padding: clamp(0.6rem, 1.5vw, 0.75rem) clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   font-weight: 600;
   color: white;
   text-decoration: none;
@@ -194,9 +205,9 @@ body {
 
 /* Game Screen */
 #game-screen {
-    padding: 0.5rem;
-    justify-content: flex-start;
-    overflow-y: auto;
+  padding: 0.5rem;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
 .game-header {
@@ -205,10 +216,11 @@ body {
   align-items: center;
   width: 100%;
   max-width: 1200px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   padding: 0 0.5rem;
   flex-wrap: nowrap;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .score-container,
@@ -221,14 +233,14 @@ body {
 
 .label {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
+  font-size: clamp(0.8rem, 2vw, 1rem);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .value {
   color: white;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 700;
   font-family: "Orbitron", monospace;
 }
@@ -238,8 +250,8 @@ body {
 }
 
 .timer-circle {
-  width: 120px;
-  height: 120px;
+  width: clamp(80px, 12vw, 120px);
+  height: clamp(80px, 12vw, 120px);
   border-radius: 50%;
   background: conic-gradient(
     from -90deg,
@@ -266,7 +278,7 @@ body {
 .timer-value {
   position: relative;
   z-index: 1;
-  font-size: 2rem;
+  font-size: clamp(1.2rem, 3vw, 2rem);
   font-weight: 700;
   color: white;
   font-family: "Orbitron", monospace;
@@ -278,7 +290,7 @@ body {
 }
 
 .heart {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
   transition: all 0.3s ease;
 }
 
@@ -293,7 +305,8 @@ body {
   gap: 1rem;
   width: 100%;
   max-width: 800px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
 .progress-bar {
@@ -315,7 +328,7 @@ body {
 .question-counter {
   color: white;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
   min-width: 80px;
   text-align: center;
 }
@@ -324,29 +337,39 @@ body {
   text-align: center;
   width: 100%;
   max-width: 1000px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
 }
 
 .question-title {
   color: white;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  margin-bottom: 0.5rem;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .images-container {
   display: flex;
-  gap: 2rem;
+  gap: clamp(1rem, 3vw, 2rem);
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  flex: 1;
+  min-height: 0;
 }
 
 .image-option {
   position: relative;
-  width: min(450px, 90vw);
-  height: min(450px, 90vw);
+  width: min(45vh, 45vw, 450px);
+  height: min(45vh, 45vw, 450px);
   max-width: 450px;
   max-height: 450px;
+  min-width: 200px;
+  min-height: 200px;
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -354,6 +377,7 @@ body {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
   border: 4px solid rgba(255, 255, 255, 0.2);
   touch-action: manipulation;
+  flex-shrink: 1;
 }
 
 .image-option img {
@@ -417,7 +441,7 @@ body {
 
 .game-over-title {
   font-family: "Orbitron", monospace;
-  font-size: 3rem;
+  font-size: clamp(2rem, 5vw, 3rem);
   color: white;
   margin-bottom: 2rem;
   font-weight: 700;
@@ -443,7 +467,7 @@ body {
 
 .final-score-value {
   font-family: "Orbitron", monospace;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   color: #feca57;
   font-weight: 900;
   text-shadow: 0 0 20px rgba(254, 202, 87, 0.5);
@@ -520,7 +544,7 @@ body {
 
 .scoreboard-title {
   font-family: "Orbitron", monospace;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   color: white;
   margin-bottom: 2rem;
   font-weight: 700;
@@ -693,16 +717,12 @@ body {
   }
 
   .image-option {
-    width: min(350px, 80vw);
-    height: min(350px, 80vw);
+    width: min(40vh, 40vw, 350px);
+    height: min(40vh, 40vw, 350px);
   }
 
   .game-header {
     padding: 0 0.5rem;
-  }
-
-  .question-title {
-    font-size: 1.8rem;
   }
 }
 
@@ -757,60 +777,39 @@ body {
 }
 
 @media (max-width: 768px) {
-    .images-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
+  .images-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    .image-option {
-        width: min(280px, 40vw);
-        height: min(280px, 40vw);
-    }
+  .image-option {
+    width: min(35vh, 35vw, 280px);
+    height: min(35vh, 35vw, 280px);
+  }
 
   .game-rules {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .game-title {
-    font-size: clamp(2rem, 8vw, 3rem);
+  .game-header {
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
   }
 
-    .game-header {
-        flex-direction: row;
-        gap: 0.5rem;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: nowrap;
-    }
-    
-    .score-container, .lives-container {
-        flex-direction: row;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .score-container .label,
-    .lives-container .label {
-        font-size: 0.9rem;
-    }
-    
-    .score-container .value {
-        font-size: 1.2rem;
-    }
-    
-    .lives-display {
-        flex-direction: row;
-        gap: 0.2rem;
-    }
-    
-    .lives-display .heart {
-        font-size: 1.2rem;
-    }
+  .score-container,
+  .lives-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-  .question-title {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+  .lives-display {
+    flex-direction: row;
+    gap: 0.2rem;
   }
 
   .name-input-container {
@@ -827,16 +826,6 @@ body {
   .scoreboard-actions {
     gap: 0.8rem;
   }
-
-  .cta-button {
-    padding: 0.8rem 2rem;
-    font-size: 1.2rem;
-  }
-
-  .leaderboard-link {
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -844,11 +833,11 @@ body {
     padding: 0.5rem;
   }
 
-    .image-option {
-        width: min(200px, 35vw);
-        height: min(200px, 35vw);
-        border-radius: 15px;
-    }
+  .image-option {
+    width: min(30vh, 30vw, 200px);
+    height: min(30vh, 30vw, 200px);
+    border-radius: 15px;
+  }
 
   .overlay-icon {
     font-size: 3rem;
@@ -858,26 +847,8 @@ body {
     font-size: 1.2rem;
   }
 
-  .game-title {
-    font-size: clamp(1.8rem, 8vw, 2.5rem);
-  }
-
   .rule-item {
     padding: 1rem;
-  }
-
-  .rule-icon {
-    font-size: 1.5rem;
-  }
-
-  .cta-button {
-    padding: 0.8rem 2rem;
-    font-size: 1.2rem;
-  }
-
-  .leaderboard-link {
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
   }
 
   .modal-content {
@@ -898,45 +869,13 @@ body {
     margin-bottom: 0.5rem;
   }
 
-  .score-container,
-  .lives-container {
-    font-size: 0.8rem;
-  }
-  
-  .score-container .value {
-    font-size: 1rem;
-  }
-
-  .timer-value {
-    font-size: 1.2rem;
-  }
-  
-  .timer-circle {
-    width: 50px;
-    height: 50px;
-  }
-  
   .progress-container {
     margin-bottom: 0.5rem;
   }
-  
-  .question-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-  
+
   .images-container {
     gap: 0.8rem;
   }
-}
-
-/* Touch feedback */
-.image-option:active {
-  transform: scale(0.95);
-}
-
-.cta-button:active {
-  transform: scale(0.95);
 }
 
 /* Touch device optimizations */
@@ -957,6 +896,28 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* Enhanced touch feedback */
+.image-option:active {
+  transform: scale(0.95);
+}
+
+.cta-button:active,
+.leaderboard-link:active {
+  transform: scale(0.95);
+}
+
+/* Prevent overscroll and bounce effects */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent pull-to-refresh */
+body {
+  overscroll-behavior-y: none;
 }
 
 /* Loading states */
