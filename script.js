@@ -7,6 +7,7 @@ const firebaseConfig = {
   storageBucket: "ai-day-ecd5e.firebasestorage.app",
   messagingSenderId: "26705685009",
   appId: "1:26705685009:web:3932d41260805a2c939fb0",
+  measurementId: "G-BNLF71WBMD"
 };
 
 // Initialize Firebase
