@@ -378,22 +378,12 @@ body {
   border: 4px solid rgba(255, 255, 255, 0.2);
   touch-action: manipulation;
   flex-shrink: 1;
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  padding: 0;
-  font: inherit;
-  color: inherit;
 }
 
 .image-option img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.image-option:disabled {
-  cursor: default;
 }
 
 .image-overlay {
@@ -537,7 +527,6 @@ body {
 #scoreboard-screen {
   padding: 2rem;
   text-align: center;
-  overflow-y: auto;
 }
 
 .scoreboard-content {
@@ -570,9 +559,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-height: 400px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
 }
 
 .score-entry {
@@ -904,23 +890,12 @@ body {
   touch-action: manipulation;
 }
 
-/* Keep drag/selection disabled on controls but preserve text input editing/selection. */
-.touch-device .image-option,
-.touch-device .cta-button,
-.touch-device .leaderboard-link,
-.touch-device .submit-button {
+/* Prevent text selection on touch devices */
+.touch-device * {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.touch-device input,
-.touch-device textarea {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
 }
 
 /* Enhanced touch feedback */
@@ -931,14 +906,6 @@ body {
 .cta-button:active,
 .leaderboard-link:active {
   transform: scale(0.95);
-}
-
-.image-option:focus-visible,
-.cta-button:focus-visible,
-.leaderboard-link:focus-visible,
-.submit-button:focus-visible {
-  outline: 3px solid #feca57;
-  outline-offset: 3px;
 }
 
 /* Prevent overscroll and bounce effects */

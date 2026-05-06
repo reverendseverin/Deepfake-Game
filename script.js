@@ -79,12 +79,6 @@ class DeepfakeGame {
   constructor() {
     this.gameState = new GameState();
     this.currentPair = null;
-    this.currentImageTypes = {
-      "image-1": null,
-      "image-2": null,
-    };
-    this.lastTouchEnd = 0;
-    this.lastPointerSelectionTs = 0;
     this.feedbackModal = document.getElementById("feedback-modal");
     this.initializeEventListeners();
     this.showScreen("start-screen");
@@ -96,7 +90,14 @@ class DeepfakeGame {
       this.startGame();
     });
 
-    this.initializeSelectionHandlers();
+    // Image selection
+    document.getElementById("image-1").addEventListener("click", () => {
+      this.selectImage("image-1");
+    });
+
+    document.getElementById("image-2").addEventListener("click", () => {
+      this.selectImage("image-2");
+    });
 
     // Submit score
     document.getElementById("submit-score").addEventListener("click", () => {
@@ -113,61 +114,19 @@ class DeepfakeGame {
       this.showScreen("start-screen");
     });
 
-    this.initializeMobileBehaviors();
-  }
+    // Prevent context menu on touch
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-  initializeSelectionHandlers() {
-    const imageOptions = document.querySelectorAll(".image-option");
-
-    imageOptions.forEach((option) => {
-      const imageId = option.id;
-
-      option.addEventListener("click", () => {
-        // Ignore synthetic click events immediately after touch pointer selection.
-        if (Date.now() - this.lastPointerSelectionTs < 350) return;
-        this.selectImage(imageId);
-      });
-
-      // Use pointer events first on modern browsers; fallback to click otherwise.
-      if (window.PointerEvent) {
-        option.addEventListener("pointerup", (event) => {
-          if (event.pointerType !== "touch") return;
-          this.lastPointerSelectionTs = Date.now();
-          this.selectImage(imageId);
-        });
-      }
-    });
-  }
-
-  initializeMobileBehaviors() {
-    if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
-      document.body.classList.add("touch-device");
-    }
-
-    // Keep viewport units stable on mobile browser chrome changes.
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
-    };
-
-    setViewportHeight();
-    window.addEventListener("resize", setViewportHeight);
-    window.addEventListener("orientationchange", () => {
-      setTimeout(setViewportHeight, 100);
-    });
-
-    // Prevent accidental double-tap zoom on the game canvas.
+    // Prevent zoom on double tap
+    let lastTouchEnd = 0;
     document.addEventListener(
       "touchend",
-      (event) => {
-        const targetInsideGame = event.target.closest("#game-screen");
-        if (!targetInsideGame) return;
-
-        const now = Date.now();
-        if (now - this.lastTouchEnd <= 300) {
-          event.preventDefault();
+      (e) => {
+        const now = new Date().getTime();
+        if (now - lastTouchEnd <= 300) {
+          e.preventDefault();
         }
-        this.lastTouchEnd = now;
+        lastTouchEnd = now;
       },
       false
     );
@@ -181,14 +140,6 @@ class DeepfakeGame {
 
     // Show target screen
     document.getElementById(screenId).classList.add("active");
-  }
-
-  setSelectionDisabled(disabled) {
-    ["image-1", "image-2"].forEach((imageId) => {
-      const option = document.getElementById(imageId);
-      option.disabled = disabled;
-      option.setAttribute("aria-disabled", String(disabled));
-    });
   }
 
   startGame() {
@@ -235,12 +186,9 @@ class DeepfakeGame {
     // Set data attributes for checking correct answer
     option1.setAttribute("data-type", positions[0]);
     option2.setAttribute("data-type", positions[1]);
-    this.currentImageTypes["image-1"] = positions[0];
-    this.currentImageTypes["image-2"] = positions[1];
 
     // Reactivate game for new question
     this.gameState.gameActive = true;
-    this.setSelectionDisabled(false);
 
     // Update UI
     this.updateGameUI();
@@ -316,11 +264,9 @@ class DeepfakeGame {
 
     // Prevent multiple clicks during feedback display
     this.gameState.gameActive = false;
-    this.setSelectionDisabled(true);
 
     const selectedElement = document.getElementById(imageId);
-    const selectedType = this.currentImageTypes[imageId] ||
-      selectedElement.getAttribute("data-type");
+    const selectedType = selectedElement.getAttribute("data-type");
     const isCorrect = selectedType === "ai";
 
     // Calculate remaining milliseconds when clicked
@@ -380,9 +326,7 @@ class DeepfakeGame {
         otherImageId === "image-1" ? "overlay-1" : "overlay-2";
       const otherElement = document.getElementById(otherImageId);
       const otherOverlay = document.getElementById(otherOverlayId);
-      const otherType =
-        this.currentImageTypes[otherImageId] ||
-        otherElement.getAttribute("data-type");
+      const otherType = otherElement.getAttribute("data-type");
 
       if (otherType === "ai") {
         // Show the AI image as the correct answer
@@ -410,34 +354,35 @@ class DeepfakeGame {
   timeUp() {
     this.stopTimer();
     this.gameState.gameActive = false;
-    this.setSelectionDisabled(true);
     this.gameState.lives--;
 
     // Show timeout feedback on both images
     const overlay1 = document.getElementById("overlay-1");
     const overlay2 = document.getElementById("overlay-2");
 
-    // Determine which image was real and which was AI from current question mapping
-    const image1Type = this.currentImageTypes["image-1"];
-    const aiImageId = image1Type === "ai" ? "image-1" : "image-2";
+    // Determine which image was real and which was AI
+    const realImageId =
+      this.currentPair.realPosition === "left" ? "image-1" : "image-2";
+    const aiImageId =
+      this.currentPair.realPosition === "left" ? "image-2" : "image-1";
 
-    // Show AI image as correct and real image as incorrect
-    if (aiImageId === "image-1") {
+    // Show real image as correct (green)
+    if (realImageId === "image-1") {
       overlay1.className = "image-overlay correct show";
       overlay1.querySelector(".overlay-icon").textContent = "✓";
-      overlay1.querySelector(".overlay-text").textContent = "AI IMAGE";
+      overlay1.querySelector(".overlay-text").textContent = "REAL";
 
       overlay2.className = "image-overlay incorrect show";
       overlay2.querySelector(".overlay-icon").textContent = "✗";
-      overlay2.querySelector(".overlay-text").textContent = "REAL IMAGE";
+      overlay2.querySelector(".overlay-text").textContent = "AI";
     } else {
       overlay1.className = "image-overlay incorrect show";
       overlay1.querySelector(".overlay-icon").textContent = "✗";
-      overlay1.querySelector(".overlay-text").textContent = "REAL IMAGE";
+      overlay1.querySelector(".overlay-text").textContent = "AI";
 
       overlay2.className = "image-overlay correct show";
       overlay2.querySelector(".overlay-icon").textContent = "✓";
-      overlay2.querySelector(".overlay-text").textContent = "AI IMAGE";
+      overlay2.querySelector(".overlay-text").textContent = "REAL";
     }
 
     // Show "Time's Up!" message at the top
@@ -675,3 +620,103 @@ document.addEventListener("DOMContentLoaded", () => {
     navigator.serviceWorker.register("sw.js").catch(console.error);
   }
 });
+// Touch event optimization for iPad
+document.addEventListener("touchstart", () => {}, { passive: true });
+document.addEventListener(
+  "touchmove",
+  (e) => {
+    // Prevent scrolling
+    e.preventDefault();
+  },
+  { passive: false }
+);
+
+// Prevent zoom on double tap
+let lastTouchEnd = 0;
+document.addEventListener(
+  "touchend",
+  (event) => {
+    const now = new Date().getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  },
+  false
+);
+
+// Mobile optimizations
+document.addEventListener("DOMContentLoaded", () => {
+  // Add mobile-specific optimizations
+  if ("ontouchstart" in window) {
+    // Add touch-friendly classes
+    document.body.classList.add("touch-device");
+
+    // Optimize touch events
+    document.addEventListener("touchstart", () => {}, { passive: true });
+    document.addEventListener(
+      "touchmove",
+      (e) => {
+        // Prevent scrolling during game
+        if (
+          document.getElementById("game-screen").classList.contains("active")
+        ) {
+          e.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+  }
+
+  // Prevent pull-to-refresh on mobile
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  // Optimize for mobile viewport
+  const setViewportHeight = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+  };
+
+  setViewportHeight();
+  window.addEventListener("resize", setViewportHeight);
+  window.addEventListener("orientationchange", () => {
+    setTimeout(setViewportHeight, 100);
+  });
+
+  // Prevent zoom on double tap
+  let lastTouchEnd = 0;
+  document.addEventListener(
+    "touchend",
+    (event) => {
+      const now = new Date().getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    },
+    false
+  );
+
+  // Prevent context menu on touch
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // Prevent overscroll
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (e.target.closest(".screen")) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+});
+
